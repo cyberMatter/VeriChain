@@ -1,0 +1,14 @@
+{
+  "name": "evidence-chain",
+  "version": "1.0.0",
+  "description": "Tamper-evident evidence cards: every claim gets a receipt.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "verify": "node verify.mjs examples/example-chain.json"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
