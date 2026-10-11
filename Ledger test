@@ -1,0 +1,87 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { GENESIS, normalize, sha256, quoteInSource, sealCard, verifyChain } from "../ledger.js";
+
+const load = (f) => JSON.parse(readFileSync(new URL(`../examples/${f}`, import.meta.url), "utf8")).cards;
+const SOURCE = "Cooling demand has grown. Analysts found that air conditioning accounts for a majority of peak summer electricity use. Adoption of shading has been slow.";
+const DAY = "2026-10-11";
+
+async function makeChain() {
+  const a = await sealCard({ claim: "A", quote: "Cooling demand has grown.", sourceText: SOURCE }, null, DAY);
+  const b = await sealCard({ claim: "B", quote: "air conditioning accounts for a majority of peak summer electricity use", sourceText: SOURCE }, a, DAY);
+  const c = await sealCard({ claim: "C", quote: "Adoption of shading has been slow." }, b, DAY);
+  return [a, b, c];
+}
+
+test("normalize collapses whitespace", () => {
+  assert.equal(normalize("  a \n  b\t c "), "a b c");
+});
+
+test("sha256 matches the standard test vector for 'abc'", async () => {
+  assert.equal(await sha256("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+});
+
+test("quoteInSource: exact, curly quotes and case are accepted", () => {
+  assert.ok(quoteInSource("COOLING demand has grown", SOURCE).ok);
+  assert.ok(quoteInSource("it’s fine", "It's fine here").ok);
+});
+
+test("quoteInSource: cuts with [...] must appear in order", () => {
+  assert.ok(quoteInSource("Cooling demand [...] shading has been slow", SOURCE).ok);
+  assert.equal(quoteInSource("shading has been slow [...] Cooling demand", SOURCE).ok, false);
+});
+
+test("quoteInSource: a changed number is not found", () => {
+  const r = quoteInSource("accounts for a minority of peak summer electricity use", SOURCE);
+  assert.equal(r.ok, false);
+});
+
+test("first card links to GENESIS; verified vs unverified status", async () => {
+  const [a, , c] = await makeChain();
+  assert.equal(a.prev, GENESIS);
+  assert.equal(a.status, "verified");
+  assert.equal(c.status, "unverified");
+  assert.equal(c.sourceHash, null);
+});
+
+test("sealing refuses a quote that is not in the source", async () => {
+  await assert.rejects(sealCard({ claim: "X", quote: "Made up words", sourceText: SOURCE }, null, DAY), /not found/);
+});
+
+test("sealing needs a claim and a quote", async () => {
+  await assert.rejects(sealCard({ claim: "", quote: "x" }), /needs both/);
+});
+
+test("an intact chain verifies", async () => {
+  const { ok } = await verifyChain(await makeChain());
+  assert.ok(ok);
+});
+
+test("editing a quote after sealing is caught on that card", async () => {
+  const chain = await makeChain();
+  chain[1].quote = chain[1].quote.replace("majority", "minority");
+  const { ok, results } = await verifyChain(chain);
+  assert.equal(ok, false);
+  assert.match(results[1].reason, /content changed/);
+  assert.equal(results[0].ok, true);
+});
+
+test("deleting a middle card breaks the link of the next card", async () => {
+  const chain = await makeChain();
+  chain.splice(1, 1);
+  const { results } = await verifyChain(chain);
+  assert.match(results[1].reason, /link broken/);
+});
+
+test("reordering cards is caught", async () => {
+  const [a, b, c] = await makeChain();
+  assert.equal((await verifyChain([b, a, c])).ok, false);
+});
+
+test("example chain is intact and the tampered example fails at card 2", async () => {
+  assert.ok((await verifyChain(load("example-chain.json"))).ok);
+  const bad = await verifyChain(load("tampered-chain.json"));
+  assert.equal(bad.ok, false);
+  assert.deepEqual(bad.results.map((r) => r.ok), [true, false, true]);
+});
