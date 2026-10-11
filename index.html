@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence Chain: every claim gets a receipt</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Evidence Chain</h1>
+<p class="lede">Every claim gets a receipt. Seal your evidence so nobody can change it, misquote it, or quietly remove it without the chain breaking.</p>
+
+<section>
+<h2>1. Add an evidence card</h2>
+<label>Claim this card supports<input id="claim" required></label>
+<label>Quote, exactly as written in the source<textarea id="quote" rows="3"></textarea></label>
+<label>Source text (optional). Paste the passage the quote comes from. If you do, the quote must appear in it word for word, and the card is marked <em>verified</em>.<textarea id="source" rows="4"></textarea></label>
+<div class="grid">
+<label>Author<input id="author"></label>
+<label>Title<input id="title"></label>
+<label>URL<input id="url" type="url"></label>
+<label>Published<input id="published" placeholder="2026-01-31"></label>
+</div>
+<button id="check" type="button" class="ghost">Check quote only</button>
+<button id="seal" type="button">Check &amp; seal card</button>
+<p id="sealMsg" class="msg" role="status"></p>
+</section>
+
+<section>
+<h2>2. Your chain</h2>
+<p>Latest receipt: <code id="headId">none yet</code></p>
+<p id="empty" class="muted">No cards yet.</p>
+<ol id="chain"></ol>
+<button id="download" type="button">Download chain (JSON)</button>
+<button id="clear" type="button" class="ghost">Clear</button>
+</section>
+
+<section>
+<h2>3. Verify a chain</h2>
+<p>Paste a chain someone sent you, or load a sample. Any edit, deletion or reordering is caught.</p>
+<textarea id="verifyInput" rows="5" placeholder="Paste chain JSON here"></textarea>
+<input id="verifyFile" type="file" accept=".json,application/json">
+<button id="verify" type="button">Verify</button>
+<button id="sampleGood" type="button" class="ghost">Load intact sample</button>
+<button id="sampleBad" type="button" class="ghost">Load tampered sample</button>
+<p id="verifyMsg" class="msg" role="status"></p>
+<ul id="verifyList"></ul>
+</section>
+
+<footer>Runs entirely in your browser. Nothing is uploaded. It proves a card has not changed since it was sealed; it does not prove the source is true.</footer>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
