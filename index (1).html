@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VeriChain: every claim gets a receipt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#252521;--p1:#20201C;--p2:#292925;--field:#1D1D19;--line:#44443E;--ink:#D4EBDC;--text:#B9B9AD;--mute:#8F8F83;--accent:#DB8460;--green:#284A3A;--greenline:#427059;--ok:#7FD39B;--warn:#E8B454;--bad:#FF8F85;
+--serif:"Source Serif 4",Charter,"Iowan Old Style",Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Consolas,monospace;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--sans)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:1500px;margin:0 auto;padding:36px clamp(16px,3vw,44px) 40px}
+.eyebrow{margin:0;font:700 .76rem var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+h1{font:400 clamp(2.8rem,7vw,5.6rem)/1.02 var(--serif);color:var(--ink);letter-spacing:-.025em;margin:18px 0 0}
+h2{font:400 clamp(1.6rem,3vw,2.3rem)/1.1 var(--serif);color:var(--ink);margin:6px 0 0}
+.hero{display:grid;gap:28px;padding:36px 0 40px;align-items:end}
+@media(min-width:900px){.hero{grid-template-columns:1.15fr 1fr}}
+.tag{font:1.25rem/1.55 var(--serif);color:var(--text);margin:0 0 24px;max-width:48ch}
+.links{display:flex;flex-wrap:wrap;gap:8px 0}
+.links button{background:none;border:0;padding:0;color:var(--ink);font:600 .95rem var(--sans);cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:7px}
+.links button+button{margin-left:18px;padding-left:18px;border-left:1px solid var(--line)}
+.links .dim{color:var(--mute)}
+.flash{margin:0 0 14px;font-weight:600}.flash:empty{display:none}.flash.ok{color:var(--ok)}.flash.bad{color:var(--bad)}
+.frame{display:grid;border:1px solid var(--line)}
+.frame>section{padding:clamp(22px,4vw,56px);border-bottom:1px solid var(--line)}
+.frame>section:last-child{border-bottom:0}
+.add{background:var(--p1)}.insp{background:var(--p2)}.chain{background:var(--bg)}
+@media(min-width:900px){.frame{grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr}
+.add{grid-row:1/3;border-right:1px solid var(--line);border-bottom:0!important}.insp{grid-column:2;grid-row:1}.chain{grid-column:2;grid-row:2}}
+.stephead{display:flex;gap:16px;align-items:center;margin-bottom:36px}
+.circle{flex:none;display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:50%;font:1rem var(--serif);color:var(--ink)}
+.f{display:block;margin-bottom:28px}
+.lab{display:block;font:700 .78rem var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.help{display:block;margin:8px 0 12px;font:italic 1rem var(--serif);color:var(--mute)}
+.lab+input,.lab+.withicon{margin-top:12px}
+input,textarea{display:block;width:100%;padding:16px 18px;background:var(--field);border:1px solid var(--line);border-radius:0;color:var(--ink);font:1.05rem/1.4 var(--sans)}
+::placeholder{color:var(--mute);opacity:1}
+textarea{resize:vertical}
+.two{display:grid;gap:0 24px}@media(min-width:560px){.two{grid-template-columns:1fr 1fr}}
+.withicon{position:relative;display:block}.withicon svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--mute)}.withicon input{padding-left:54px}
+.half{max-width:50%}@media(max-width:560px){.half{max-width:none}}
+input[type=date]{min-height:58px}
+.live{margin:0 0 32px;padding:18px;border:1px dashed var(--line);color:var(--mute);font-size:.95rem}
+.live.ok{border:1px solid var(--ok);color:var(--ok)}.live.warn{border:1px solid var(--warn);color:var(--warn)}.live.bad{border:1px solid var(--bad);color:var(--bad)}
+.seal{display:flex;align-items:center;justify-content:space-between;width:100%;padding:22px;background:var(--green);border:1px solid var(--greenline);color:#E8F5EC;font:700 .9rem var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.seal:disabled,.export:disabled{opacity:.4;cursor:not-allowed}
+.msg{min-height:1.4em;margin:12px 0 0;font-weight:600}.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+.drop{position:relative;display:flex;align-items:center;gap:18px;margin:0;padding:26px 24px;border:1px dashed var(--line);cursor:pointer}
+.drop.over,.drop:focus-within{border-color:var(--accent)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px;padding:0;border:0}
+.dropicon{flex:none;display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--line);border-radius:50%;color:var(--ok)}
+.droptext{flex:1;display:grid}.droptext b{color:var(--ink)}.droptext small{color:var(--mute);font-size:.9rem}
+.browse{padding:12px 18px;border:1px solid var(--mute);color:var(--ink);font:700 .74rem var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.chainhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.count{margin:6px 0 0;font:.85rem var(--mono);color:var(--mute)}.count:empty{display:none}
+.badge{display:inline-block;padding:12px 16px;border:1px solid var(--line);font:700 .72rem var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.badge.ok{border-color:var(--ok);color:var(--ok)}.badge.bad{border-color:var(--bad);color:var(--bad)}.badge.warn{border-color:var(--warn);color:var(--warn)}
+.alert{margin-top:24px;padding:14px 16px;border:1px solid var(--bad);color:var(--bad);overflow-wrap:anywhere}.alert code{font-family:var(--mono)}
+.empty{display:grid;justify-items:center;text-align:center;gap:10px;padding:48px 16px 56px}
+.empty h3{font:400 1.7rem var(--serif);color:var(--ink);margin:14px 0 0}
+.empty p{margin:0;max-width:34ch;font:1.05rem/1.55 var(--serif);color:var(--mute)}
+.cards{list-style:none;margin:28px 0 0;padding:0}
+.card{border:1px solid var(--line);background:var(--p1);padding:18px 20px}.card.bad{border-color:var(--bad)}
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.8rem;color:var(--mute)}
+.top .badge{padding:3px 9px;font-size:.64rem}
+.card .num{font:700 .85rem var(--mono);color:var(--accent)}
+.claim{display:block;margin:12px 0 10px;font:600 1.15rem/1.35 var(--serif);color:var(--ink)}
+blockquote{margin:0;padding:12px 16px;border-left:2px solid var(--accent);background:var(--field);font:italic 1.02rem/1.5 var(--serif);color:var(--text)}
+blockquote::before{content:"\201C"}blockquote::after{content:"\201D"}
+.meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:12px;font:.74rem var(--mono);color:var(--mute)}.meta a{color:var(--ok)}
+.fail{margin-top:12px;padding:8px 12px;border:1px solid var(--bad);color:var(--bad);font-weight:600;font-size:.85rem}
+.link{height:26px;margin-left:28px;border-left:1px solid var(--line)}.link.bad{border-color:var(--bad)}
+.export{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin-top:28px;padding:20px;background:transparent;border:1px solid var(--line);color:var(--ink);font:700 .8rem var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:32px 0 8px;color:var(--mute);font-size:.88rem}
+.footl{display:flex;align-items:center;gap:16px}.footl p{margin:0}.footl b{color:var(--text)}
+.logo{flex:none;display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);font:1.1rem var(--serif);color:var(--ink)}
+.ver{font:.78rem var(--mono);letter-spacing:.08em;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <p class="eyebrow">VeriChain</p>
+    <h1>Every claim gets a receipt.</h1>
+  </div>
+  <div>
+    <p class="tag">Check a quote against its source, then seal it. If anyone changes it later, the chain breaks and shows exactly where.</p>
+    <div class="links">
+      <button id="sampleGood" type="button">Load intact sample</button>
+      <button id="sampleBad" type="button">Load tampered sample</button>
+      <button id="clear" type="button" class="dim">Clear all</button>
+    </div>
+  </div>
+</header>
+<p id="flash" class="flash" role="status"></p>
+
+<main class="frame">
+  <section class="add" aria-labelledby="h-add">
+    <div class="stephead"><span class="circle">1</span><div><p class="eyebrow">Create a record</p><h2 id="h-add">Add evidence</h2></div></div>
+    <label class="f"><span class="lab">Claim</span><span class="help">The point this evidence supports.</span><textarea id="claim" rows="2" placeholder="What does this evidence establish?"></textarea></label>
+    <label class="f"><span class="lab">Quote</span><span class="help">Copy it exactly. Use [...] where you cut words out.</span><textarea id="quote" rows="4" placeholder="Paste the exact quote here..."></textarea></label>
+    <label class="f"><span class="lab">Source text</span><span class="help">Paste the passage the quote comes from.</span><textarea id="source" rows="7" placeholder="Paste enough surrounding text to verify the quote..."></textarea></label>
+    <div id="live" class="live idle" role="status">Enter a quote to see its verification status.</div>
+    <div class="two">
+      <label class="f"><span class="lab">Author</span><input id="author" autocomplete="off" placeholder="Full name"></label>
+      <label class="f"><span class="lab">Source title</span><input id="title" autocomplete="off" placeholder="Article, book, speech..."></label>
+    </div>
+    <label class="f"><span class="lab">URL</span><span class="withicon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="url" type="url" autocomplete="off" placeholder="https://"></span></label>
+    <label class="f half"><span class="lab">Published</span><input id="published" type="date"></label>
+    <button id="seal" class="seal" type="button">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l9 9-9 9-9-9z"/></svg>
+      <span>Seal card into chain</span>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <p id="sealMsg" class="msg" role="status"></p>
+  </section>
+
+  <section class="insp" aria-labelledby="h-verify">
+    <div class="stephead"><span class="circle">2</span><div><p class="eyebrow">Inspect a record</p><h2 id="h-verify">Check a chain someone sent you</h2></div></div>
+    <label class="drop" id="drop"><input id="file" type="file" accept=".json,application/json">
+      <span class="dropicon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
+      <span class="droptext"><b>Drop a chain file here</b><small>or choose a .json file</small></span>
+      <span class="browse">Browse</span>
+    </label>
+  </section>
+
+  <section class="chain" aria-labelledby="h-chain">
+    <div class="chainhead">
+      <div><p class="eyebrow">Your workspace</p><h2 id="h-chain">The chain</h2><p id="count" class="count"></p></div>
+      <span id="status" class="badge idle">EMPTY</span>
+    </div>
+    <div id="alert" class="alert" role="alert" hidden></div>
+    <div id="empty" class="empty">
+      <svg viewBox="0 0 240 76" width="240" height="76" fill="none" stroke-width="1.4" aria-hidden="true"><g stroke="#5b5b53"><polygon points="4,10 54,5 54,65 4,70"/><polygon points="184,5 234,10 234,70 184,65"/><path d="M54 38h40M144 38h40"/></g><polygon points="94,5 144,10 144,70 94,65" stroke="#DB8460"/></svg>
+      <h3>No cards yet</h3>
+      <p>Add your first piece of evidence on the left, or load a sample above.</p>
+    </div>
+    <ol id="cards" class="cards"></ol>
+    <button id="export" class="export" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg> Export chain (.json)</button>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="footl"><span class="logo">V</span><p><b>Runs entirely in your browser.</b> Nothing is uploaded. It proves a card has not changed since it was sealed; it does not prove the source is true.</p></div>
+  <span class="ver">SHA-256 · v1.0</span>
+</footer>
+</div>
+<script type="module">
+// ledger.js: all the logic, with no DOM, so the same code runs in the browser and in Node tests.
+const subtle = globalThis.crypto.subtle;
+
+const GENESIS = "0".repeat(64);
+// The fields that are sealed into each card's hash, in a fixed order.
+const FIELDS = ["claim", "quote", "author", "title", "url", "published", "accessed", "status", "sourceHash", "prev"];
+
+function normalize(text) {
+  return String(text ?? "").normalize("NFKC").replace(/\s+/g, " ").trim();
+}
+
+// Looser form used only for finding a quote inside a source (case, curly quotes, dashes).
+const loose = (t) =>
+  normalize(t).replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, "-").toLowerCase();
+
+async function sha256(text) {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Checks that a quote appears word-for-word in the source text.
+// Debate-style cuts are allowed: "first part [...] last part" must appear in that order.
+function quoteInSource(quote, source) {
+  const src = loose(source);
+  const parts = loose(quote).split(/\s*(?:\[\s*\.\.\.\s*\]|\.\.\.)\s*/).filter(Boolean);
+  if (!parts.length) return { ok: false, missing: "" };
+  let from = 0;
+  for (const part of parts) {
+    const at = src.indexOf(part, from);
+    if (at === -1) return { ok: false, missing: part };
+    from = at + part.length;
+  }
+  return { ok: true, missing: null };
+}
+
+const canonical = (card) => JSON.stringify(FIELDS.map((f) => card[f] ?? null));
+
+// Turns an evidence card into a sealed card linked to the previous one.
+// If source text is supplied, the quote must be found in it, otherwise sealing fails.
+async function sealCard(input, prevCard = null, accessed = new Date().toISOString().slice(0, 10)) {
+  const claim = normalize(input.claim);
+  const quote = normalize(input.quote);
+  if (!claim || !quote) throw new Error("A card needs both a claim and a quote.");
+
+  const source = normalize(input.sourceText);
+  let status = "unverified";
+  let sourceHash = null;
+  if (source) {
+    const check = quoteInSource(quote, source);
+    if (!check.ok) throw new Error(`Quote not found in the source text: "${check.missing}"`);
+    status = "verified";
+    sourceHash = await sha256(source);
+  }
+
+  const card = {
+    claim, quote,
+    author: normalize(input.author),
+    title: normalize(input.title),
+    url: normalize(input.url),
+    published: normalize(input.published),
+    accessed, status, sourceHash,
+    prev: prevCard ? prevCard.hash : GENESIS,
+  };
+  card.hash = await sha256(canonical(card));
+  return card;
+}
+
+// Re-computes every hash and link. Any edit, deletion or reordering shows up as a failure.
+// Each failing result says what was expected and what was found.
+async function verifyChain(cards) {
+  const results = [];
+  let prev = GENESIS;
+  for (const [index, raw] of cards.entries()) {
+    const card = raw && typeof raw === "object" ? raw : {};
+    const actual = await sha256(canonical(card));
+    let reason = null, expected = null, found = null;
+    if (card.prev !== prev) {
+      reason = "link broken: this card does not follow the one before it";
+      expected = prev; found = card.prev ?? "";
+    } else if (actual !== card.hash) {
+      reason = "content changed after sealing";
+      expected = card.hash ?? ""; found = actual;
+    }
+    results.push({ index, hash: card.hash ?? "", ok: !reason, reason, expected, found });
+    prev = card.hash;
+  }
+  return { ok: results.every((r) => r.ok), results };
+}
+
+// Built-in demo chain (fictional sources). Generated from examples/example-chain.json.
+const SAMPLE = {
+ "format": "evidence-chain/1",
+ "cards": [
+  {
+   "claim": "Cooling drives peak summer power demand.",
+   "quote": "air conditioning accounts for a majority of peak summer electricity use",
+   "author": "Example Author",
+   "title": "Example Climate Briefing (fictional)",
+   "url": "https://example.org/briefing",
+   "published": "2026-01-15",
+   "accessed": "2026-10-11",
+   "status": "verified",
+   "sourceHash": "ff48082582f7c45ba83ae8e42a8d2734a70c928ecbd56e6f0ced928cfd2c07d0",
+   "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+   "hash": "b89e503ee168a34d50bfffdde6c2a5e66e9a324ab9725561f15c85e0b6ea1319"
+  },
+  {
+   "claim": "Reflective roofing cut cooling energy in a pilot.",
+   "quote": "Measured cooling energy fell by 18 percent in the first summer.",
+   "author": "Example Author",
+   "title": "Demo Policy Note (fictional)",
+   "url": "https://example.org/pilot",
+   "published": "2026-03-02",
+   "accessed": "2026-10-11",
+   "status": "verified",
+   "sourceHash": "466c4f4efd50895273694b2b3c9c435ec3eb23b1ca4b3910e58a8c8e2da318a2",
+   "prev": "b89e503ee168a34d50bfffdde6c2a5e66e9a324ab9725561f15c85e0b6ea1319",
+   "hash": "a07832f42e50df39619b9b97569e220d4094962137b4efa5c8bab6cbbfbfaddf"
+  },
+  {
+   "claim": "The pilot result may not generalise.",
+   "quote": "results may vary between buildings",
+   "author": "Example Author",
+   "title": "Demo Policy Note (fictional)",
+   "url": "https://example.org/pilot",
+   "published": "2026-03-02",
+   "accessed": "2026-10-11",
+   "status": "verified",
+   "sourceHash": "466c4f4efd50895273694b2b3c9c435ec3eb23b1ca4b3910e58a8c8e2da318a2",
+   "prev": "a07832f42e50df39619b9b97569e220d4094962137b4efa5c8bab6cbbfbfaddf",
+   "hash": "89358bc0e734b9903a75717abad576580f1baec415177f11e8a6a0c134d5725e"
+  }
+ ]
+};
+
+
+const $ = (id) => document.getElementById(id);
+const STORE = "verichain";
+const FORM = ["claim", "quote", "source", "author", "title", "url", "published"];
+let chain = [];
+let check = { ok: true, results: [] };
+try { chain = JSON.parse(localStorage.getItem(STORE) || "[]"); } catch { chain = []; }
+const persist = () => { try { localStorage.setItem(STORE, JSON.stringify(chain)); } catch { /* storage unavailable */ } };
+const short = (hash) => (hash && hash.length > 9 ? `${hash.slice(0, 4)}…${hash.slice(-4)}` : hash || "none");
+
+function h(tag, cls, ...kids) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  node.append(...kids);
+  return node;
+}
+function hashEl(label, value) {
+  const span = h("span", "", `${label}: ${short(value)}`);
+  span.title = value || "";
+  return span;
+}
+function safeLink(url) {
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:" ? u.href : null;
+  } catch { return null; }
+}
+function say(el, text, kind = "") { el.textContent = text; el.className = el.className.split(" ")[0] + " " + kind; }
+
+function render() {
+  const broken = !check.ok;
+  const badge = $("status");
+  badge.className = "badge " + (!chain.length ? "idle" : broken ? "bad" : "ok");
+  badge.textContent = !chain.length ? "EMPTY" : broken ? "CHAIN BROKEN" : "CHAIN INTACT";
+  $("count").textContent = chain.length ? `${chain.length} card${chain.length === 1 ? "" : "s"} sealed` : "";
+  $("empty").hidden = chain.length > 0;
+  $("export").disabled = !chain.length;
+  $("seal").disabled = broken;
+
+  const bad = check.results.find((r) => !r.ok);
+  const box = $("alert");
+  box.hidden = !bad;
+  if (bad) {
+    const kind = bad.reason.startsWith("link") ? "Link broken" : "Tamper detected";
+    const exp = h("code", "", short(bad.expected)); exp.title = bad.expected;
+    const got = h("code", "", short(bad.found)); got.title = bad.found;
+    box.replaceChildren(h("strong", "", `${kind} at card #${bad.index + 1}: `), `${bad.reason}. Expected `, exp, ", found ", got, ". Adding new cards is paused until the chain is fixed.");
+  }
+
+  const list = $("cards");
+  list.replaceChildren();
+  chain.forEach((c, i) => {
+    const res = check.results[i] || { ok: true };
+    const top = h("div", "top", h("span", "num", `#${i + 1}`), h("span", "badge " + (c.status === "verified" ? "ok" : "warn"), c.status.toUpperCase()), [c.author, c.published].filter(Boolean).join(" · "));
+    const meta = h("div", "meta");
+    const href = safeLink(c.url);
+    if (href) { const a = h("a", "", c.title || c.url); a.href = href; a.target = "_blank"; a.rel = "noopener noreferrer"; meta.append(a); }
+    else if (c.title) meta.append(h("span", "", c.title));
+    meta.append(hashEl("hash", c.hash), hashEl("prev", c.prev));
+    const li = h("li", "card" + (res.ok ? "" : " bad"), top, h("strong", "claim", c.claim), h("blockquote", "", c.quote), meta);
+    if (!res.ok) li.append(h("div", "fail", `Failed: ${res.reason}`));
+    list.append(li);
+    if (i < chain.length - 1) list.append(h("li", "link" + (check.results[i + 1] && !check.results[i + 1].ok ? " bad" : "")));
+  });
+}
+
+async function refresh() { check = await verifyChain(chain); render(); }
+
+function flash(text, kind = "ok") { say($("flash"), text, kind); }
+
+function liveCheck() {
+  const quote = $("quote").value, source = $("source").value, box = $("live");
+  const set = (cls, text) => { box.className = "live " + cls; box.textContent = text; };
+  if (!quote.trim()) return set("idle", "Enter a quote to see its verification status.");
+  if (!source.trim()) return set("warn", "Unverified: with no source text, the quote can't be checked.");
+  const r = quoteInSource(quote, source);
+  r.ok ? set("ok", "Verified: the quote appears word for word in the source.") : set("bad", `Not found in the source: “${r.missing}”`);
+}
+
+async function loadChain(data, label) {
+  const cards = Array.isArray(data) ? data : data?.cards;
+  if (!Array.isArray(cards) || !cards.every((c) => c && typeof c === "object" && typeof c.hash === "string")) return flash("That is not a valid chain file.", "bad");
+  if (chain.length && !confirm("Loading replaces the chain shown here. Export it first if you want to keep it. Continue?")) return;
+  chain = cards; persist(); await refresh();
+  flash(`Loaded ${label}.`, "ok");
+}
+async function readFile(file) {
+  if (!file) return;
+  try { await loadChain(JSON.parse(await file.text()), file.name); } catch { flash("That file is not valid JSON.", "bad"); }
+  $("file").value = "";
+}
+
+FORM.forEach((k) => $(k).addEventListener("input", liveCheck));
+
+$("seal").addEventListener("click", async () => {
+  const f = Object.fromEntries(FORM.map((k) => [k, $(k).value]));
+  try {
+    const card = await sealCard({ ...f, sourceText: f.source }, chain[chain.length - 1] ?? null);
+    chain.push(card); persist(); await refresh();
+    FORM.forEach((k) => ($(k).value = ""));
+    liveCheck();
+    say($("sealMsg"), `Sealed as ${card.status}. Receipt #${card.hash.slice(0, 8)}.`, "ok");
+  } catch (err) { say($("sealMsg"), err.message, "bad"); }
+});
+
+$("sampleGood").addEventListener("click", () => loadChain(structuredClone(SAMPLE), "the intact sample"));
+$("sampleBad").addEventListener("click", () => {
+  const data = structuredClone(SAMPLE);
+  data.cards[1].quote = data.cards[1].quote.replace("18 percent", "48 percent");
+  loadChain(data, "the tampered sample");
+});
+$("clear").addEventListener("click", async () => {
+  if (chain.length && confirm("Delete every card from this browser?")) { chain = []; persist(); await refresh(); flash("Chain cleared.", "ok"); }
+});
+$("export").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify({ format: "evidence-chain/1", cards: chain }, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "verichain.json"; a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+const drop = $("drop");
+["dragenter", "dragover"].forEach((e) => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach((e) => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", (ev) => readFile(ev.dataTransfer.files[0]));
+$("file").addEventListener("change", (ev) => readFile(ev.target.files[0]));
+
+refresh();
+</script>
+</body>
+</html>
