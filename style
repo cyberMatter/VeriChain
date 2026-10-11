@@ -1,0 +1,24 @@
+:root{--bg:#f4f7f7;--ink:#10262d;--mute:#52696f;--card:#fff;--line:#c9dadc;--accent:#0b6e78;--ok:#1e7a3c;--bad:#b3261e;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1f24;--ink:#e6f1f2;--mute:#9db6bc;--card:#14303a;--line:#27474f;--accent:#4fc3cf;--ok:#6fcf8a;--bad:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:2.4rem;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:1.15rem;margin:0 0 12px}
+.lede,.muted,footer,small{color:var(--mute)}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:18px}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:12px}
+input,textarea{display:block;width:100%;margin-top:4px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-weight:400}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0 12px}
+button{padding:9px 16px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer;margin:4px 6px 4px 0}
+button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.msg{min-height:1.4em;font-weight:600}.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+ol,ul{padding-left:20px}li{margin-bottom:14px}
+blockquote{margin:6px 0;padding-left:12px;border-left:3px solid var(--line)}
+.badge{display:inline-block;padding:1px 8px;border-radius:99px;font-size:.78rem;font-weight:700;border:1px solid var(--line)}
+.badge.verified{color:var(--ok);border-color:var(--ok)}
+code{font-family:ui-monospace,Consolas,monospace}
+#verifyList{list-style:none;padding:0}#verifyList li{margin-bottom:6px}
+.pass{color:var(--ok)}.fail{color:var(--bad)}
+footer{margin-top:24px;font-size:.85rem}
