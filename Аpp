@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VeriChain: every claim gets a receipt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <p class="eyebrow">VeriChain</p>
+    <h1>Every claim gets a receipt.</h1>
+  </div>
+  <div>
+    <p class="tag">Check a quote against its source, then seal it. If anyone changes it later, the chain breaks and shows exactly where.</p>
+    <div class="links">
+      <button id="sampleGood" type="button">Load intact sample</button>
+      <button id="sampleBad" type="button">Load tampered sample</button>
+      <button id="clear" type="button" class="dim">Clear all</button>
+    </div>
+  </div>
+</header>
+<p id="flash" class="flash" role="status"></p>
+
+<main class="frame">
+  <section class="add" aria-labelledby="h-add">
+    <div class="stephead"><span class="circle">1</span><div><p class="eyebrow">Create a record</p><h2 id="h-add">Add evidence</h2></div></div>
+    <label class="f"><span class="lab">Claim</span><span class="help">The point this evidence supports.</span><textarea id="claim" rows="2" placeholder="What does this evidence establish?"></textarea></label>
+    <label class="f"><span class="lab">Quote</span><span class="help">Copy it exactly. Use [...] where you cut words out.</span><textarea id="quote" rows="4" placeholder="Paste the exact quote here..."></textarea></label>
+    <label class="f"><span class="lab">Source text</span><span class="help">Paste the passage the quote comes from.</span><textarea id="source" rows="7" placeholder="Paste enough surrounding text to verify the quote..."></textarea></label>
+    <div id="live" class="live idle" role="status">Enter a quote to see its verification status.</div>
+    <div class="two">
+      <label class="f"><span class="lab">Author</span><input id="author" autocomplete="off" placeholder="Full name"></label>
+      <label class="f"><span class="lab">Source title</span><input id="title" autocomplete="off" placeholder="Article, book, speech..."></label>
+    </div>
+    <label class="f"><span class="lab">URL</span><span class="withicon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="url" type="url" autocomplete="off" placeholder="https://"></span></label>
+    <label class="f half"><span class="lab">Published</span><input id="published" type="date"></label>
+    <button id="seal" class="seal" type="button">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l9 9-9 9-9-9z"/></svg>
+      <span>Seal card into chain</span>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <p id="sealMsg" class="msg" role="status"></p>
+  </section>
+
+  <section class="insp" aria-labelledby="h-verify">
+    <div class="stephead"><span class="circle">2</span><div><p class="eyebrow">Inspect a record</p><h2 id="h-verify">Check a chain someone sent you</h2></div></div>
+    <label class="drop" id="drop"><input id="file" type="file" accept=".json,application/json">
+      <span class="dropicon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
+      <span class="droptext"><b>Drop a chain file here</b><small>or choose a .json file</small></span>
+      <span class="browse">Browse</span>
+    </label>
+  </section>
+
+  <section class="chain" aria-labelledby="h-chain">
+    <div class="chainhead">
+      <div><p class="eyebrow">Your workspace</p><h2 id="h-chain">The chain</h2><p id="count" class="count"></p></div>
+      <span id="status" class="badge idle">EMPTY</span>
+    </div>
+    <div id="alert" class="alert" role="alert" hidden></div>
+    <div id="empty" class="empty">
+      <svg viewBox="0 0 240 76" width="240" height="76" fill="none" stroke-width="1.4" aria-hidden="true"><g stroke="#5b5b53"><polygon points="4,10 54,5 54,65 4,70"/><polygon points="184,5 234,10 234,70 184,65"/><path d="M54 38h40M144 38h40"/></g><polygon points="94,5 144,10 144,70 94,65" stroke="#DB8460"/></svg>
+      <h3>No cards yet</h3>
+      <p>Add your first piece of evidence on the left, or load a sample above.</p>
+    </div>
+    <ol id="cards" class="cards"></ol>
+    <button id="export" class="export" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg> Export chain (.json)</button>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="footl"><span class="logo">V</span><p><b>Runs entirely in your browser.</b> Nothing is uploaded. It proves a card has not changed since it was sealed; it does not prove the source is true.</p></div>
+  <span class="ver">SHA-256 · v1.0</span>
+</footer>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
