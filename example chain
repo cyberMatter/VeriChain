@@ -1,0 +1,44 @@
+{
+  "format": "evidence-chain/1",
+  "cards": [
+    {
+      "claim": "Cooling drives peak summer power demand.",
+      "quote": "air conditioning accounts for a majority of peak summer electricity use",
+      "author": "Example Author",
+      "title": "Example Climate Briefing (fictional)",
+      "url": "https://example.org/briefing",
+      "published": "2026-01-15",
+      "accessed": "2026-10-11",
+      "status": "verified",
+      "sourceHash": "ff48082582f7c45ba83ae8e42a8d2734a70c928ecbd56e6f0ced928cfd2c07d0",
+      "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+      "hash": "b89e503ee168a34d50bfffdde6c2a5e66e9a324ab9725561f15c85e0b6ea1319"
+    },
+    {
+      "claim": "Reflective roofing cut cooling energy in a pilot.",
+      "quote": "Measured cooling energy fell by 18 percent in the first summer.",
+      "author": "Example Author",
+      "title": "Demo Policy Note (fictional)",
+      "url": "https://example.org/pilot",
+      "published": "2026-03-02",
+      "accessed": "2026-10-11",
+      "status": "verified",
+      "sourceHash": "466c4f4efd50895273694b2b3c9c435ec3eb23b1ca4b3910e58a8c8e2da318a2",
+      "prev": "b89e503ee168a34d50bfffdde6c2a5e66e9a324ab9725561f15c85e0b6ea1319",
+      "hash": "a07832f42e50df39619b9b97569e220d4094962137b4efa5c8bab6cbbfbfaddf"
+    },
+    {
+      "claim": "The pilot result may not generalise.",
+      "quote": "results may vary between buildings",
+      "author": "Example Author",
+      "title": "Demo Policy Note (fictional)",
+      "url": "https://example.org/pilot",
+      "published": "2026-03-02",
+      "accessed": "2026-10-11",
+      "status": "verified",
+      "sourceHash": "466c4f4efd50895273694b2b3c9c435ec3eb23b1ca4b3910e58a8c8e2da318a2",
+      "prev": "a07832f42e50df39619b9b97569e220d4094962137b4efa5c8bab6cbbfbfaddf",
+      "hash": "89358bc0e734b9903a75717abad576580f1baec415177f11e8a6a0c134d5725e"
+    }
+  ]
+}
